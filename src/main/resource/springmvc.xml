@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd  http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <!--扫描包-->
+    <context:component-scan base-package="controller"/>
+    <!-- 转换器配置 -->
+    <mvc:annotation-driven conversion-service="conversionService"/>
+    <bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+        <property name="converters">
+            <set>
+                <bean class="converter.DateConverter"/>
+            </set>
+        </property>
+    </bean>
+    <!--拦截器的打开-->
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <!--拦截所有的请求-->
+            <mvc:mapping path="/**"/>
+            <bean class="interceptor.MyInterceptor"/>
+        </mvc:interceptor>
+        <mvc:interceptor>
+            <!--拦截特定的请求-->
+            <mvc:mapping path="/test"/>
+            <bean class="interceptor.OtherInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+    <!--配置视图解析器-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/pages/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+   <!--上传文件解析器配置-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="defaultEncoding" value="utf-8" />
+        <property name="maxUploadSize" value="10485760000" />
+        <property name="maxInMemorySize" value="40960" />
+    </bean>
+    <!-- 配置全局异常处理器 -->
+    <bean class="exception.ExceptionResolver"/>
+</beans>
